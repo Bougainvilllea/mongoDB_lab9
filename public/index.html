@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Научный журнал</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .search-panel {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input, select, button {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .articles-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+    .article-card {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .article-title {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    .article-meta {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    .tag {
+      background: #e0f7fa;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Электронный научный журнал</h1>
+  
+  <div class="search-panel">
+    <div class="search-row">
+      <input type="text" id="titleSearch" placeholder="Поиск по названию">
+      <button id="searchTitleBtn">Найти</button>
+    </div>
+    
+    <div class="search-row">
+      <select id="authorSelect">
+        <option value="">Все авторы</option>
+      </select>
+      <button id="searchAuthorBtn">Фильтр по автору</button>
+    </div>
+    
+    <div class="search-row">
+      <button id="resetBtn">Сбросить фильтры</button>
+    </div>
+  </div>
+  
+  <div id="loading" style="display: none;">Загрузка данных...</div>
+  
+  <div class="articles-list" id="articlesList"></div>
+
+  <script>
+    // DOM элементы
+    const titleSearch = document.getElementById('titleSearch');
+    const authorSelect = document.getElementById('authorSelect');
+    const articlesList = document.getElementById('articlesList');
+    const loading = document.getElementById('loading');
+    
+    // Загрузка всех статей
+    async function loadArticles() {
+      try {
+        showLoading(true);
+        const response = await fetch('/api/articles');
+        const articles = await response.json();
+        displayArticles(articles);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        showLoading(false);
+      }
+    }
+    
+    // Поиск статей
+    async function searchArticles() {
+      try {
+        showLoading(true);
+        const title = titleSearch.value.trim();
+        const author = authorSelect.value;
+        
+        let url = '/api/articles/search?';
+        if (title) url += `title=${encodeURIComponent(title)}&`;
+        if (author) url += `author=${encodeURIComponent(author)}`;
+        
+        const response = await fetch(url);
+        const articles = await response.json();
+        displayArticles(articles);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        showLoading(false);
+      }
+    }
+    
+    // Отображение статей
+    function displayArticles(articles) {
+      if (!articles || articles.length === 0) {
+        articlesList.innerHTML = '<p>Статьи не найдены</p>';
+        return;
+      }
+      
+      articlesList.innerHTML = articles.map(article => `
+        <div class="article-card">
+          <h3 class="article-title">${article.title}</h3>
+          <div class="article-meta">
+            <p><strong>Авторы:</strong> ${article.authors.join(', ')}</p>
+            <p><strong>Дата:</strong> ${new Date(article.publishDate).toLocaleDateString()}</p>
+          </div>
+          <div class="tags">
+            ${article.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Загрузка авторов
+    async function loadAuthors() {
+      try {
+        const response = await fetch('/api/articles');
+        const articles = await response.json();
+        
+        // Получаем уникальных авторов
+        const authors = [...new Set(articles.flatMap(article => article.authors))];
+        
+        // Заполняем выпадающий список
+        authors.forEach(author => {
+          const option = document.createElement('option');
+          option.value = author;
+          option.textContent = author;
+          authorSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Ошибка загрузки авторов:', err);
+      }
+    }
+    
+    // Управление состоянием загрузки
+    function showLoading(isLoading) {
+      loading.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Отображение ошибок
+    function showError(message) {
+      articlesList.innerHTML = `<p style="color: red;">Ошибка: ${message}</p>`;
+    }
+    
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      loadArticles();
+      loadAuthors();
+      
+      // Обработчики событий
+      document.getElementById('searchTitleBtn').addEventListener('click', searchArticles);
+      document.getElementById('searchAuthorBtn').addEventListener('click', searchArticles);
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        titleSearch.value = '';
+        authorSelect.value = '';
+        loadArticles();
+      });
+      
+      // Поиск при нажатии Enter
+      titleSearch.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchArticles();
+      });
+    });
+  </script>
+</body>
+</html>
