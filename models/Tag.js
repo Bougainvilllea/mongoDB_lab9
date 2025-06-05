@@ -1,17 +1,30 @@
+// Импорт библиотеки Mongoose для работы с MongoDB
 const mongoose = require('mongoose');
 
-const TagSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Пожалуйста, укажите название тега'],
-    unique: true,
-    trim: true,
-    maxlength: [50, 'Название тега не может превышать 50 символов']
+// Создание схемы отзыва (ReviewSchema) с помощью mongoose.Schema
+const ReviewSchema = new mongoose.Schema({
+  userName: {
+    type: String, // Поле должно быть строкой (имя пользователя)
+    required: [true, 'Пожалуйста, укажите имя'], // Обязательное поле с сообщением об ошибке
+    trim: true, // Автоматическое удаление пробелов в начале и конце строки
+    maxlength: [50, 'Имя не может превышать 50 символов'] // Максимальная длина 50 символов
+  },
+  text: {
+    type: String, // Поле должно быть строкой (текст отзыва)
+    required: [true, 'Пожалуйста, добавьте текст отзыва'], // Обязательное поле
+    maxlength: [500, 'Отзыв не может превышать 500 символов'] // Максимальная длина 500 символов
+  },
+  rating: {
+    type: Number, // Поле должно быть числом (оценка)
+    required: [true, 'Пожалуйста, укажите оценку от 1 до 10'], // Обязательное поле
+    min: 1, // Минимальное значение 1
+    max: 10 // Максимальное значение 10
   },
   createdAt: {
-    type: Date,
-    default: Date.now
+    type: Date, // Поле должно быть датой (дата создания)
+    default: Date.now // Значение по умолчанию - текущая дата и время
   }
 });
 
-module.exports = mongoose.model('Tag', TagSchema);
+// Экспорт модели Review, созданной на основе ReviewSchema
+module.exports = mongoose.model('Review', ReviewSchema);
