@@ -1,48 +1,58 @@
-const mongoose = require('mongoose');
-const Review = require('./Review');
-const Tag = require('./Tag');
+// Импорт необходимых модулей
+const mongoose = require('mongoose'); // Импорт библиотеки Mongoose для работы с MongoDB
+const Review = require('./Review'); // Импорт модели Review (отзывы)
+const Tag = require('./Tag'); // Импорт модели Tag (теги)
 
+// Создание схемы статьи (ArticleSchema) с помощью mongoose.Schema
 const ArticleSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: [true, 'Пожалуйста, добавьте название статьи'],
-    trim: true,
-    maxlength: [200, 'Название статьи не может превышать 200 символов']
+    type: String, // Поле title должно быть строкой
+    required: [true, 'Пожалуйста, добавьте название статьи'], // Обязательное поле с сообщением об ошибке
+    trim: true, // Автоматическое удаление пробелов в начале и конце строки
+    maxlength: [200, 'Название статьи не может превышать 200 символов'] // Максимальная длина 200 символов
   },
   authors: {
-    type: [String],
-    required: [true, 'Пожалуйста, укажите авторов']
+    type: [String], // Массив строк (список авторов)
+    required: [true, 'Пожалуйста, укажите авторов'] // Обязательное поле
   },
   publishDate: {
-    type: Date,
-    default: Date.now
+    type: Date, // Поле должно быть датой
+    default: Date.now // Значение по умолчанию - текущая дата и время
   },
   content: {
-    type: String,
-    required: [true, 'Пожалуйста, добавьте содержание статьи']
+    type: String, // Поле должно быть строкой (содержание статьи)
+    required: [true, 'Пожалуйста, добавьте содержание статьи'] // Обязательное поле
   },
   tags: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Tag',
-    required: true
+    type: [mongoose.Schema.Types.ObjectId], // Массив ObjectId (ссылки на документы Tag)
+    ref: 'Tag', // Связь с моделью Tag
+    required: true // Обязательное поле
   },
-  reviews: [Review.schema],
+  reviews: [Review.schema], // Массив отзывов, использующих схему Review
   averageRating: {
-    type: Number,
-    min: [1, 'Рейтинг должен быть не менее 1'],
-    max: [10, 'Рейтинг должен быть не более 10']
+    type: Number, // Поле должно быть числом (средний рейтинг)
+    min: [1, 'Рейтинг должен быть не менее 1'], // Минимальное значение 1
+    max: [10, 'Рейтинг должен быть не более 10'] // Максимальное значение 10
   }
 });
 
-// Рассчет среднего рейтинга перед сохранением
+// Middleware (пред-сохранение) - выполняется перед сохранением документа
 ArticleSchema.pre('save', function(next) {
+  // Проверяем, есть ли отзывы и не пустой ли массив reviews
   if (this.reviews && this.reviews.length > 0) {
+    // Считаем сумму всех рейтингов отзывов
     const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+    // Рассчитываем средний рейтинг
     this.averageRating = sum / this.reviews.length;
   } else {
+    // Если отзывов нет, устанавливаем средний рейтинг в 0
     this.averageRating = 0;
   }
-  next();
+  next(); // Передаем управление следующему middleware
+});
+
+// Экспорт модели Article, созданной на основе ArticleSchema
+module.exports = mongoose.model('Article', ArticleSchema);
 });
 
 module.exports = mongoose.model('Article', ArticleSchema);
