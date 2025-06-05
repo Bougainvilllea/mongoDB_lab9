@@ -1,84 +1,118 @@
 <!DOCTYPE html>
+<!-- Объявление типа документа как HTML5 -->
 <html lang="ru">
+<!-- Корневой элемент HTML с указанием языка (русский) -->
 <head>
+  <!-- Секция заголовка документа -->
   <meta charset="UTF-8">
+  <!-- Указание кодировки UTF-8 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Настройка viewport для корректного отображения на мобильных устройствах -->
   <title>Научный журнал</title>
+  <!-- Заголовок страницы в браузере -->
+  
   <style>
+    /* Стили для всей страницы */
     body {
-      font-family: Arial, sans-serif;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
+      font-family: Arial, sans-serif; /* Основной шрифт */
+      max-width: 1200px; /* Максимальная ширина контента */
+      margin: 0 auto; /* Центрирование по горизонтали */
+      padding: 20px; /* Внутренние отступы */
     }
+    
+    /* Стили для панели поиска */
     .search-panel {
-      background: #f5f5f5;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      background: #f5f5f5; /* Цвет фона */
+      padding: 20px; /* Внутренние отступы */
+      border-radius: 8px; /* Скругление углов */
+      margin-bottom: 20px; /* Внешний отступ снизу */
     }
+    
+    /* Строка поиска */
     .search-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      display: flex; /* Flex-контейнер */
+      gap: 10px; /* Расстояние между элементами */
+      margin-bottom: 10px; /* Внешний отступ снизу */
     }
+    
+    /* Общие стили для input, select и button */
     input, select, button {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 10px; /* Внутренние отступы */
+      font-size: 16px; /* Размер шрифта */
+      border: 1px solid #ddd; /* Граница */
+      border-radius: 4px; /* Скругление углов */
     }
+    
+    /* Специфичные стили для кнопок */
     button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
+      background: #4CAF50; /* Цвет фона */
+      color: white; /* Цвет текста */
+      border: none; /* Удаление границы */
+      cursor: pointer; /* Курсор-указатель */
     }
+    
+    /* Стиль кнопки при наведении */
     button:hover {
-      background: #45a049;
+      background: #45a049; /* Изменение цвета фона */
     }
+    
+    /* Список статей */
     .articles-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px;
+      display: grid; /* Grid-разметка */
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Автоматическое заполнение колонок */
+      gap: 20px; /* Расстояние между элементами */
     }
+    
+    /* Карточка статьи */
     .article-card {
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid #ddd; /* Граница */
+      padding: 15px; /* Внутренние отступы */
+      border-radius: 8px; /* Скругление углов */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Тень */
     }
+    
+    /* Заголовок статьи */
     .article-title {
-      margin-top: 0;
-      color: #2c3e50;
+      margin-top: 0; /* Удаление верхнего отступа */
+      color: #2c3e50; /* Цвет текста */
     }
+    
+    /* Мета-информация статьи */
     .article-meta {
-      color: #7f8c8d;
-      font-size: 14px;
+      color: #7f8c8d; /* Цвет текста */
+      font-size: 14px; /* Размер шрифта */
     }
+    
+    /* Контейнер для тегов */
     .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin: 10px 0;
+      display: flex; /* Flex-контейнер */
+      flex-wrap: wrap; /* Перенос на новую строку */
+      gap: 5px; /* Расстояние между элементами */
+      margin: 10px 0; /* Внешние отступы */
     }
+    
+    /* Отдельный тег */
     .tag {
-      background: #e0f7fa;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      background: #e0f7fa; /* Цвет фона */
+      padding: 3px 8px; /* Внутренние отступы */
+      border-radius: 4px; /* Скругление углов */
+      font-size: 12px; /* Размер шрифта */
     }
   </style>
 </head>
 <body>
+  <!-- Основное содержимое страницы -->
   <h1>Электронный научный журнал</h1>
   
+  <!-- Панель поиска -->
   <div class="search-panel">
+    <!-- Строка поиска по названию -->
     <div class="search-row">
       <input type="text" id="titleSearch" placeholder="Поиск по названию">
       <button id="searchTitleBtn">Найти</button>
     </div>
     
+    <!-- Строка фильтрации по автору -->
     <div class="search-row">
       <select id="authorSelect">
         <option value="">Все авторы</option>
@@ -86,47 +120,54 @@
       <button id="searchAuthorBtn">Фильтр по автору</button>
     </div>
     
+    <!-- Строка сброса фильтров -->
     <div class="search-row">
       <button id="resetBtn">Сбросить фильтры</button>
     </div>
   </div>
   
+  <!-- Индикатор загрузки (изначально скрыт) -->
   <div id="loading" style="display: none;">Загрузка данных...</div>
   
+  <!-- Контейнер для списка статей -->
   <div class="articles-list" id="articlesList"></div>
 
   <script>
-    // DOM элементы
+    // DOM элементы - получение ссылок на элементы интерфейса
     const titleSearch = document.getElementById('titleSearch');
     const authorSelect = document.getElementById('authorSelect');
     const articlesList = document.getElementById('articlesList');
     const loading = document.getElementById('loading');
     
-    // Загрузка всех статей
+    // Функция загрузки всех статей
     async function loadArticles() {
       try {
-        showLoading(true);
+        showLoading(true); // Показать индикатор загрузки
+        // Запрос к API для получения статей
         const response = await fetch('/api/articles');
-        const articles = await response.json();
-        displayArticles(articles);
+        const articles = await response.json(); // Парсинг ответа в JSON
+        displayArticles(articles); // Отображение статей
       } catch (err) {
-        showError(err.message);
+        showError(err.message); // Обработка ошибок
       } finally {
-        showLoading(false);
+        showLoading(false); // Скрыть индикатор загрузки
       }
     }
     
-    // Поиск статей
+    // Функция поиска статей
     async function searchArticles() {
       try {
         showLoading(true);
+        // Получение значений из полей ввода
         const title = titleSearch.value.trim();
         const author = authorSelect.value;
         
+        // Формирование URL для запроса с параметрами
         let url = '/api/articles/search?';
         if (title) url += `title=${encodeURIComponent(title)}&`;
         if (author) url += `author=${encodeURIComponent(author)}`;
         
+        // Выполнение запроса
         const response = await fetch(url);
         const articles = await response.json();
         displayArticles(articles);
@@ -137,13 +178,15 @@
       }
     }
     
-    // Отображение статей
+    // Функция отображения статей
     function displayArticles(articles) {
+      // Проверка на пустой результат
       if (!articles || articles.length === 0) {
         articlesList.innerHTML = '<p>Статьи не найдены</p>';
         return;
       }
       
+      // Генерация HTML для каждой статьи
       articlesList.innerHTML = articles.map(article => `
         <div class="article-card">
           <h3 class="article-title">${article.title}</h3>
@@ -155,19 +198,20 @@
             ${article.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
           </div>
         </div>
-      `).join('');
+      `).join(''); // Преобразование массива в строку
     }
     
-    // Загрузка авторов
+    // Функция загрузки авторов
     async function loadAuthors() {
       try {
+        // Запрос к API для получения статей
         const response = await fetch('/api/articles');
         const articles = await response.json();
         
-        // Получаем уникальных авторов
+        // Получаем уникальных авторов из всех статей
         const authors = [...new Set(articles.flatMap(article => article.authors))];
         
-        // Заполняем выпадающий список
+        // Заполняем выпадающий список авторами
         authors.forEach(author => {
           const option = document.createElement('option');
           option.value = author;
@@ -179,31 +223,31 @@
       }
     }
     
-    // Управление состоянием загрузки
+    // Функция управления индикатором загрузки
     function showLoading(isLoading) {
       loading.style.display = isLoading ? 'block' : 'none';
     }
     
-    // Отображение ошибок
+    // Функция отображения ошибок
     function showError(message) {
       articlesList.innerHTML = `<p style="color: red;">Ошибка: ${message}</p>`;
     }
     
-    // Инициализация
+    // Инициализация при загрузке DOM
     document.addEventListener('DOMContentLoaded', () => {
-      loadArticles();
-      loadAuthors();
+      loadArticles(); // Загрузка статей
+      loadAuthors(); // Загрузка авторов
       
-      // Обработчики событий
+      // Назначение обработчиков событий
       document.getElementById('searchTitleBtn').addEventListener('click', searchArticles);
       document.getElementById('searchAuthorBtn').addEventListener('click', searchArticles);
       document.getElementById('resetBtn').addEventListener('click', () => {
-        titleSearch.value = '';
-        authorSelect.value = '';
-        loadArticles();
+        titleSearch.value = ''; // Очистка поля поиска
+        authorSelect.value = ''; // Сброс выбора автора
+        loadArticles(); // Повторная загрузка всех статей
       });
       
-      // Поиск при нажатии Enter
+      // Обработка нажатия Enter в поле поиска
       titleSearch.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') searchArticles();
       });
